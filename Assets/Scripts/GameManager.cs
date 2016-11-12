@@ -3,25 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-//
+
 public class GameManager : MonoBehaviour {
     [SerializeField]
     public List<CellNode> cellNodes;
     private List<Sequence> sections;
 
-    public static GameManager instance;
+    public static GameManager instance = null;
+
+    public ActionEnum.Tool selectedTool;
 	
     void Awake()
     {
-        if (instance != this)
-            Destroy(instance);
         if (instance == null)
             instance = this;
+        else if (instance != this)
+            Destroy(gameObject);
+
+        //Sets this to not be destroyed when reloading scene
+        DontDestroyOnLoad(gameObject);
+
+        selectedTool = ActionEnum.Tool.None;
 
         sections = new List<Sequence>();
         sections.Add(new Sequence("Test", getListOfCells(new List<string>() { "TEST" })));
-
-        Debug.Log(sections[0].actions.Count);
     }
 
     public void sectionCompleted()
