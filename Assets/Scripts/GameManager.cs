@@ -6,8 +6,8 @@ using System;
 
 public class GameManager : MonoBehaviour {
     [SerializeField]
-    public List<CellNode> cellNodes;
-    private List<Sequence> possibleSections;
+    public List<Histone> cellNodes;
+    private List<DNASequence> possibleSections;
 
     public static GameManager instance = null;
 
@@ -25,26 +25,21 @@ public class GameManager : MonoBehaviour {
 
         selectedTool = ActionEnum.Tool.None;
 
-        possibleSections = new List<Sequence>();
-        possibleSections.Add(new Sequence("Test", getListOfCells(new List<string>() { "TEST" })));
+        possibleSections = new List<DNASequence>();
+        possibleSections.Add(new DNASequence("", getListOfCells(new List<string>() { "TEST" })));
     }
 
-    public void sectionCompleted()
+    private List<Nucleosome> getListOfCells(IEnumerable<string> cellNames)
     {
-
-    }
-
-    private List<CellNode> getListOfCells(IEnumerable<string> cellNames)
-    {
-        List<CellNode> cells = new List<CellNode>();
+        List<Nucleosome> cells = new List<Nucleosome>();
         foreach(string s in cellNames)
         {
-            cells.Add(getCellByName(s));
+            //cells.Add(getCellByName(s));
         }
         return cells;
     }
 
-    private CellNode getCellByName(string searchName)
+    private Histone getCellByName(string searchName)
     {
         var node = cellNodes.Where(m => m.name.ToLower() == searchName.ToLower()).First();
         return node;

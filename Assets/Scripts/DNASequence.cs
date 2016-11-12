@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Sequence {
+public class DNASequence {
     public string sequenceName;
-    public List<CellNode> actions;
+    public List<Nucleosome> nucleosomes;
 
-    public Sequence(string sequence, List<CellNode> list)
+    public DNASequence(string sequence, List<Nucleosome> list)
     {
         sequenceName = sequence;
-        actions = list;
+        nucleosomes = list;
     }
 }
