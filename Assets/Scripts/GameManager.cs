@@ -7,7 +7,7 @@ using System;
 public class GameManager : MonoBehaviour {
     [SerializeField]
     public List<CellNode> cellNodes;
-    private List<Sequence> sections;
+    private List<Sequence> possibleSections;
 
     public static GameManager instance = null;
 
@@ -25,8 +25,8 @@ public class GameManager : MonoBehaviour {
 
         selectedTool = ActionEnum.Tool.None;
 
-        sections = new List<Sequence>();
-        sections.Add(new Sequence("Test", getListOfCells(new List<string>() { "TEST" })));
+        possibleSections = new List<Sequence>();
+        possibleSections.Add(new Sequence("Test", getListOfCells(new List<string>() { "TEST" })));
     }
 
     public void sectionCompleted()
@@ -48,5 +48,16 @@ public class GameManager : MonoBehaviour {
     {
         var node = cellNodes.Where(m => m.name.ToLower() == searchName.ToLower()).First();
         return node;
+    }
+
+    public void LockSelection()
+    {
+        Debug.Log("Selection locked for section");
+    }
+
+    public void ChangeNode(int selection)
+    {
+        if(selectedTool != ActionEnum.Tool.None)
+            Debug.Log(string.Format("Node {0} had {1} used on it", selection, selectedTool));
     }
 }

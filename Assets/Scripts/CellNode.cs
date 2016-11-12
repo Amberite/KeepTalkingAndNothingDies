@@ -6,5 +6,6 @@ public class CellNode{
     public string name;
     public ActionEnum.Tool toolRequired;
     public string labelText;
+    public bool isActive;
     public Sprite picture;
 }
