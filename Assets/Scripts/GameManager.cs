@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-
+//
 public class GameManager : MonoBehaviour {
     [SerializeField]
     public List<CellNode> cellNodes;
