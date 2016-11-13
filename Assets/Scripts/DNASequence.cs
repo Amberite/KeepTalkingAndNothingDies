@@ -12,4 +12,10 @@ public class DNASequence {
         sequenceName = sequence;
         nucleosomes = list;
     }
+
+    public DNASequence()
+    {
+        sequenceName = "";
+        nucleosomes = new List<Histone>();
+    }
 }

@@ -51,10 +51,6 @@ public class InputController : MonoBehaviour {
         {
             GameManager.instance.ChangeNode(3);
         }
-        if(Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            GameManager.instance.ChangeNode(4);
-        }
         if(Input.GetKeyDown(KeyCode.Space))
         {
             GameManager.instance.LockSelection();
