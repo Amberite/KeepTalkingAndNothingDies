@@ -4,10 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
+using Random = System.Random;
+
 public class GameManager : MonoBehaviour {
     [SerializeField]
-    public List<CellNode> cellNodes;
-    private List<Sequence> sections;
+    public List<Histone> cellNodes;
+    private List<DNASequence> possibleSections;
+    private DNASequence currentSequence = new DNASequence();
+    private Histone currentHistone;
+    private int currentIndex = -1;
+    public float totalTime;
+    private float curTime;
+
+    public AudioSource effectSource;
+
+    public AudioClip[] clickSounds;
+    public AudioClip[] goodBloops;
+    public AudioClip[] badBloops;
 
     public static GameManager instance = null;
 
@@ -25,18 +38,48 @@ public class GameManager : MonoBehaviour {
 
         selectedTool = ActionEnum.Tool.None;
 
-        sections = new List<Sequence>();
-        sections.Add(new Sequence("Test", getListOfCells(new List<string>() { "TEST" })));
+        possibleSections = new List<DNASequence>();
+        possibleSections.Add(new DNASequence("Blood Cell", getListOfCells(new List<string>() { "PU.1", "Sox2", "Oct4", "Gata2", "MyoD", "CD34", "Thy1", "Vim" })));
+
+        Random r = new Random(DateTime.Now.Millisecond);
+        DNASequence tempSequence = possibleSections[r.Next(0, possibleSections.Count)];
+        currentSequence.sequenceName = tempSequence.sequenceName;
+        while(tempSequence.nucleosomes.Count > 0)
+        {
+            Histone toMove = tempSequence.nucleosomes[r.Next(0, tempSequence.nucleosomes.Count)];
+            Array values = Enum.GetValues(typeof(ActionEnum.State));
+            toMove.currentState = new ActionEnum.State[3];
+            for (int i = 0; i < toMove.currentState.Length; i++)
+            {
+                toMove.currentState[i] = (ActionEnum.State)values.GetValue(r.Next(values.Length));
+            }
+            currentSequence.nucleosomes.Add(toMove);
+            tempSequence.nucleosomes.Remove(toMove);
+        }
+        currentHistone = currentSequence.nucleosomes[0];
+        currentIndex = 0;
+        curTime = totalTime;
+        for(int i = 0; i < currentHistone.currentState.Length; i++)
+        {
+            Debug.Log(currentHistone.currentState[i] + " " + currentHistone.requiredState[i]);
+        }
     }
 
-    public void sectionCompleted()
+    void Update()
     {
-
+        curTime -= Time.deltaTime;
+        if (curTime <= 0)
+            Debug.Log("OUT OF TIME FUCKER");
     }
 
-    private List<CellNode> getListOfCells(IEnumerable<string> cellNames)
+    void OnGUI()
     {
-        List<CellNode> cells = new List<CellNode>();
+        GUILayout.Label(curTime.ToString());
+    }
+
+    private List<Histone> getListOfCells(IEnumerable<string> cellNames)
+    {
+        List<Histone> cells = new List<Histone>();
         foreach(string s in cellNames)
         {
             cells.Add(getCellByName(s));
@@ -44,9 +87,93 @@ public class GameManager : MonoBehaviour {
         return cells;
     }
 
-    private CellNode getCellByName(string searchName)
+    private Histone getCellByName(string searchName)
     {
         var node = cellNodes.Where(m => m.name.ToLower() == searchName.ToLower()).First();
         return node;
+    }
+
+    public void LockSelection()
+    {
+        currentIndex++;
+        if(currentIndex < currentSequence.nucleosomes.Count)
+        {
+            currentHistone = currentSequence.nucleosomes[currentIndex];
+            for (int i = 0; i < currentHistone.currentState.Length; i++)
+            {
+                Debug.Log(currentHistone.currentState[i] + " " + currentHistone.requiredState[i]);
+            }
+        }
+        else
+        {
+            Debug.Log("LOAD END SCENE");
+        }
+    }
+
+    public void SetTool(ActionEnum.Tool tool)
+    {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = clickSounds[r.Next(clickSounds.Length)];
+        effectSource.Play();
+        selectedTool = tool;
+    }
+
+    public void ChangeNode(int selection)
+    {
+        int nodeIndex = selection - 1;
+        if (selectedTool != ActionEnum.Tool.None)
+        {
+            ActionEnum.State curState = currentHistone.currentState[nodeIndex];
+            ActionEnum.State goalState = currentHistone.requiredState[nodeIndex];
+            switch (selectedTool)
+            {
+                case ActionEnum.Tool.Acetylation:
+                    if (curState == ActionEnum.State.None && goalState == ActionEnum.State.Ac)
+                        ChangeState(nodeIndex, ActionEnum.State.Ac);
+                    else
+                        GivePenalty();
+                    break;
+                case ActionEnum.Tool.Decetylation:
+                    if (curState == ActionEnum.State.Ac && goalState != ActionEnum.State.Ac)
+                        ChangeState(nodeIndex, ActionEnum.State.None);
+                    else
+                        GivePenalty();
+                    break;
+                case ActionEnum.Tool.Methylation:
+                    if (curState == ActionEnum.State.None && goalState == ActionEnum.State.Me)
+                        ChangeState(nodeIndex, ActionEnum.State.Me);
+                    else
+                        GivePenalty();
+                    break;
+                case ActionEnum.Tool.Demethylation:
+                    if (curState == ActionEnum.State.Me && goalState != ActionEnum.State.Me)
+                        ChangeState(nodeIndex, ActionEnum.State.None);
+                    else
+                        GivePenalty();
+                    break;
+            }
+        }
+    }
+
+    private void ChangeState(int selection, ActionEnum.State newState)
+    {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = goodBloops[r.Next(goodBloops.Length)];
+        effectSource.Play();
+        currentHistone.currentState[selection] = newState;
+        Debug.Log("MADE A CHANGE");
+        if (currentHistone.currentState[selection] == currentHistone.requiredState[selection])
+        {
+            Debug.Log("NOW ITS DONE");
+        }
+    }
+
+    private void GivePenalty()
+    {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = badBloops[r.Next(badBloops.Length)];
+        effectSource.Play();
+        Debug.Log("THAT WAS WRONG");
+        curTime -= 15.0f;
     }
 }
