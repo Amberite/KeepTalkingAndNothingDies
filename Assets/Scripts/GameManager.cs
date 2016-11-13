@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour {
     public float totalTime;
     private float curTime;
 
+    public AudioSource effectSource;
+
+    public AudioClip[] clickSounds;
+    public AudioClip[] goodBloops;
+    public AudioClip[] badBloops;
+
     public static GameManager instance = null;
 
     public ActionEnum.Tool selectedTool;
@@ -104,6 +110,14 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public void SetTool(ActionEnum.Tool tool)
+    {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = clickSounds[r.Next(clickSounds.Length)];
+        effectSource.Play();
+        selectedTool = tool;
+    }
+
     public void ChangeNode(int selection)
     {
         int nodeIndex = selection - 1;
@@ -133,7 +147,7 @@ public class GameManager : MonoBehaviour {
                     break;
                 case ActionEnum.Tool.Demethylation:
                     if (curState == ActionEnum.State.Me && goalState != ActionEnum.State.Me)
-                        ChangeState(nodeIndex, ActionEnum.State.Me);
+                        ChangeState(nodeIndex, ActionEnum.State.None);
                     else
                         GivePenalty();
                     break;
@@ -143,7 +157,11 @@ public class GameManager : MonoBehaviour {
 
     private void ChangeState(int selection, ActionEnum.State newState)
     {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = goodBloops[r.Next(goodBloops.Length)];
+        effectSource.Play();
         currentHistone.currentState[selection] = newState;
+        Debug.Log("MADE A CHANGE");
         if (currentHistone.currentState[selection] == currentHistone.requiredState[selection])
         {
             Debug.Log("NOW ITS DONE");
@@ -152,6 +170,9 @@ public class GameManager : MonoBehaviour {
 
     private void GivePenalty()
     {
+        Random r = new Random(DateTime.Now.Millisecond);
+        effectSource.clip = badBloops[r.Next(badBloops.Length)];
+        effectSource.Play();
         Debug.Log("THAT WAS WRONG");
         curTime -= 15.0f;
     }
