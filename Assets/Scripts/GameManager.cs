@@ -6,6 +6,7 @@ using System;
 
 using Random = System.Random;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
     [SerializeField]
@@ -35,6 +36,7 @@ public class GameManager : MonoBehaviour {
     private Animation anim;
 
     public Text histoneLabel;
+    public Text timeLabel;
 
     void Awake()
     {
@@ -81,14 +83,17 @@ public class GameManager : MonoBehaviour {
 
     void Update()
     {
-        curTime -= Time.deltaTime;
-        if (curTime <= 0)
-            Debug.Log("OUT OF TIME FUCKER");
-    }
-
-    void OnGUI()
-    {
-        GUILayout.Label(curTime.ToString());
+        if(SceneManager.GetActiveScene().buildIndex == 0)
+        {
+            curTime -= Time.deltaTime;
+            if (curTime <= 0)
+            {
+                SceneManager.LoadScene(1);
+            }
+            string minutes = Mathf.Floor(curTime / 60).ToString("00");
+            string seconds = (curTime % 60).ToString("00");
+            timeLabel.text = string.Format("Time remaining: {0}:{1}", minutes, seconds);
+        }
     }
 
     private List<Histone> getListOfCells(IEnumerable<string> cellNames)
