@@ -29,12 +29,12 @@ public class GameManager : MonoBehaviour {
         possibleSections.Add(new DNASequence("", getListOfCells(new List<string>() { "TEST" })));
     }
 
-    private List<Nucleosome> getListOfCells(IEnumerable<string> cellNames)
+    private List<Histone> getListOfCells(IEnumerable<string> cellNames)
     {
-        List<Nucleosome> cells = new List<Nucleosome>();
+        List<Histone> cells = new List<Histone>();
         foreach(string s in cellNames)
         {
-            //cells.Add(getCellByName(s));
+            cells.Add(getCellByName(s));
         }
         return cells;
     }

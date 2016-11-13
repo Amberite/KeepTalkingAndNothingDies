@@ -5,9 +5,9 @@ using System.Linq;
 
 public class DNASequence {
     public string sequenceName;
-    public List<Nucleosome> nucleosomes;
+    public List<Histone> nucleosomes;
 
-    public DNASequence(string sequence, List<Nucleosome> list)
+    public DNASequence(string sequence, List<Histone> list)
     {
         sequenceName = sequence;
         nucleosomes = list;
