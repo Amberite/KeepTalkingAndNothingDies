@@ -9,6 +9,8 @@ public class InputController : MonoBehaviour {
     public Text toolLabel;
     private List<Transform> toolChildren = new List<Transform>();
     private Transform lastButton = null;
+    private Vector2 selectedSize = new Vector2(55, 55);
+    private Vector2 unselectedSize = new Vector2(50, 50);
 	// Use this for initialization
 	void Start () {
         //Cursor.lockState = CursorLockMode.Locked;
@@ -31,27 +33,31 @@ public class InputController : MonoBehaviour {
         }
         if(Input.GetKeyDown(KeyCode.D))
         {
-            changeTool(ActionEnum.Tool.Coiling);
+            changeTool(ActionEnum.Tool.Methylation);
         }
         if(Input.GetKeyDown(KeyCode.F))
         {
-            changeTool(ActionEnum.Tool.Uncoiling);
+            changeTool(ActionEnum.Tool.Demethylation);
         }
-        if(Input.GetKeyDown(KeyCode.Z))
+        if(Input.GetKeyDown(KeyCode.Alpha1))
         {
-            changeTool(ActionEnum.Tool.Histone_Methylation);
+            GameManager.instance.ChangeNode(1);
         }
-        if(Input.GetKeyDown(KeyCode.X))
+        if(Input.GetKeyDown(KeyCode.Alpha2))
         {
-            changeTool(ActionEnum.Tool.Histone_Demethylation);
+            GameManager.instance.ChangeNode(2);
         }
-        if(Input.GetKeyDown(KeyCode.C))
+        if(Input.GetKeyDown(KeyCode.Alpha3))
         {
-            changeTool(ActionEnum.Tool.DNA_Methylation);
+            GameManager.instance.ChangeNode(3);
         }
-        if(Input.GetKeyDown(KeyCode.V))
+        if(Input.GetKeyDown(KeyCode.Alpha4))
         {
-            changeTool(ActionEnum.Tool.DNA_Demethylation);
+            GameManager.instance.ChangeNode(4);
+        }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            GameManager.instance.LockSelection();
         }
 	}
 
@@ -59,17 +65,17 @@ public class InputController : MonoBehaviour {
     {
         if (lastButton != null)
         {
-            changeColour(lastButton, Color.white);
+            changeSelection(lastButton, unselectedSize);
         }
         GameManager.instance.selectedTool = tool;
         Transform newButton = toolChildren.Single(t => t.gameObject.name == tool.ToString());
-        changeColour(newButton, Color.green);
+        changeSelection(newButton, selectedSize);
         lastButton = newButton;
         toolLabel.text = string.Format("Current Tool: {0}", tool.ToString().Replace('_', ' '));
     }
 
-    void changeColour(Transform transform, Color color)
+    void changeSelection(Transform transform, Vector2 size)
     {
-        transform.GetComponent<Image>().color = color;
+        transform.GetComponent<RectTransform>().sizeDelta = size;
     }
 }
