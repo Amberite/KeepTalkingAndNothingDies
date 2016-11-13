@@ -39,22 +39,6 @@ public class InputController : MonoBehaviour {
         {
             changeTool(ActionEnum.Tool.Demethylation);
         }
-        if(Input.GetKeyDown(KeyCode.Z))
-        {
-            changeTool(ActionEnum.Tool.Ubiquitylation);
-        }
-        if(Input.GetKeyDown(KeyCode.X))
-        {
-            changeTool(ActionEnum.Tool.Deubiquitylation);
-        }
-        if(Input.GetKeyDown(KeyCode.C))
-        {
-            changeTool(ActionEnum.Tool.Phosphorylation);
-        }
-        if(Input.GetKeyDown(KeyCode.V))
-        {
-            changeTool(ActionEnum.Tool.Dephosphorylation);
-        }
         if(Input.GetKeyDown(KeyCode.Alpha1))
         {
             GameManager.instance.ChangeNode(1);
