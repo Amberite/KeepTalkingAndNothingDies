@@ -15,4 +15,11 @@ public class ActionEnum{
         Phosphorylation,
         Dephosphorylation
     };
+
+    public enum State
+    {
+        None,
+        Me,
+        Ac
+    }
 }
