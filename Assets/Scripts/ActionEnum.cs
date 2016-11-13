@@ -19,7 +19,7 @@ public class ActionEnum{
     public enum State
     {
         None,
-        Me,
-        Ac
+        Ac,
+        Me
     }
 }

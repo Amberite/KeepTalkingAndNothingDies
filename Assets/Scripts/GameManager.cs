@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 
 using Random = System.Random;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
     [SerializeField]
@@ -22,10 +23,19 @@ public class GameManager : MonoBehaviour {
     public AudioClip[] goodBloops;
     public AudioClip[] badBloops;
 
+    public GameObject tailRoot;
+    public Sprite[] flagSprites;
+
+    public GameObject oreoHolder;
+
     public static GameManager instance = null;
 
     public ActionEnum.Tool selectedTool;
-	
+
+    private Animation anim;
+
+    public Text histoneLabel;
+
     void Awake()
     {
         if (instance == null)
@@ -61,8 +71,12 @@ public class GameManager : MonoBehaviour {
         curTime = totalTime;
         for(int i = 0; i < currentHistone.currentState.Length; i++)
         {
+            GameObject tailNode = tailRoot.transform.GetChild(i).gameObject;
+            tailNode.GetComponent<Image>().sprite = flagSprites[(int)currentHistone.currentState[i]];
             Debug.Log(currentHistone.currentState[i] + " " + currentHistone.requiredState[i]);
         }
+        anim = oreoHolder.GetComponent<Animation>();
+        histoneLabel.text = currentHistone.name;
     }
 
     void Update()
@@ -95,18 +109,29 @@ public class GameManager : MonoBehaviour {
 
     public void LockSelection()
     {
-        currentIndex++;
-        if(currentIndex < currentSequence.nucleosomes.Count)
+        if(!anim.isPlaying)
         {
-            currentHistone = currentSequence.nucleosomes[currentIndex];
-            for (int i = 0; i < currentHistone.currentState.Length; i++)
+            currentIndex++;
+            if (currentIndex == 1)
+                anim.Play("ScrollUpStart");
+            else if (currentIndex < currentSequence.nucleosomes.Count - 1)
+                anim.Play("ScrollUpMiddle");
+            else if (currentIndex == currentSequence.nucleosomes.Count - 1)
+                anim.Play("ScrollUpEnd");
+            if (currentIndex < currentSequence.nucleosomes.Count)
             {
-                Debug.Log(currentHistone.currentState[i] + " " + currentHistone.requiredState[i]);
+                currentHistone = currentSequence.nucleosomes[currentIndex];
+                for (int i = 0; i < currentHistone.currentState.Length; i++)
+                {
+                    GameObject tailNode = tailRoot.transform.GetChild(i).gameObject;
+                    tailNode.GetComponent<Image>().sprite = flagSprites[(int)currentHistone.currentState[i]];
+                }
             }
-        }
-        else
-        {
-            Debug.Log("LOAD END SCENE");
+            else
+            {
+                Debug.Log("LOAD END SCENE");
+            }
+            histoneLabel.text = currentHistone.name;
         }
     }
 
@@ -161,11 +186,9 @@ public class GameManager : MonoBehaviour {
         effectSource.clip = goodBloops[r.Next(goodBloops.Length)];
         effectSource.Play();
         currentHistone.currentState[selection] = newState;
-        Debug.Log("MADE A CHANGE");
-        if (currentHistone.currentState[selection] == currentHistone.requiredState[selection])
-        {
-            Debug.Log("NOW ITS DONE");
-        }
+        Image tailFlag = tailRoot.transform.GetChild(selection).GetComponent<Image>();
+        Debug.Log(tailFlag.name);
+        tailFlag.sprite = flagSprites[(int)newState];
     }
 
     private void GivePenalty()
