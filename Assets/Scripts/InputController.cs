@@ -59,15 +59,18 @@ public class InputController : MonoBehaviour {
 
     void changeTool(ActionEnum.Tool tool)
     {
-        if (lastButton != null)
+        if(tool != GameManager.instance.selectedTool)
         {
-            changeSelection(lastButton, unselectedSize);
+            if (lastButton != null)
+            {
+                changeSelection(lastButton, unselectedSize);
+            }
+            GameManager.instance.SetTool(tool);
+            Transform newButton = toolChildren.Single(t => t.gameObject.name == tool.ToString());
+            changeSelection(newButton, selectedSize);
+            lastButton = newButton;
+            toolLabel.text = string.Format("Current Tool: {0}", tool.ToString().Replace('_', ' '));
         }
-        GameManager.instance.selectedTool = tool;
-        Transform newButton = toolChildren.Single(t => t.gameObject.name == tool.ToString());
-        changeSelection(newButton, selectedSize);
-        lastButton = newButton;
-        toolLabel.text = string.Format("Current Tool: {0}", tool.ToString().Replace('_', ' '));
     }
 
     void changeSelection(Transform transform, Vector2 size)
